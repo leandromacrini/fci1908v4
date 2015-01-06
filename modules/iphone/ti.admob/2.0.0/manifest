@@ -1,0 +1,17 @@
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 2.0.0
+apiversion: 2
+description: admob
+author: Leonarts
+license: Specify your license
+copyright: Copyright (c) 2014 by Your Company
+
+# these should not be edited
+name: admob
+moduleid: ti.admob
+guid: 50bc36e4-ae26-4663-973b-51c0cee45d1c
+platform: iphone
+minsdk: 3.1.2.GA

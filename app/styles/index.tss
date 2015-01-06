@@ -1,0 +1,189 @@
+"#index[formFactor=tablet]": {
+	backgroundColor:"#d4cbbb",
+	navBarHidden : true,
+	navTintColor : "#000",
+	orientationModes : [ Ti.UI.PORTRAIT, Ti.UI.LANDSCAPE_LEFT, Ti.UI.LANDSCAPE_RIGHT ],
+	top : 0,
+	bottom : 0
+},
+"#index[formFactor=handheld]": {
+	backgroundColor:"#d4cbbb",
+	navBarHidden : true,
+	navTintColor : "#000",
+	orientationModes : [ Ti.UI.PORTRAIT],
+	top : 0,
+	bottom : 0
+},
+"Label": {
+	width: Ti.UI.SIZE,
+	height: Ti.UI.SIZE,
+	color: "#000"
+},
+"#options":{
+	backgroundColor : "#000",
+	width : '60%',
+	left : 0,
+	rowHeight : 50
+},
+"#pagesContainer":{
+	top : 0,
+	bottom : 0,
+	left : 0,
+	width : "100%",
+	backgroundColor : "#fff",
+	scrollingEnabled : false
+},
+	"#header":{
+		top : 0,
+		height : 50,
+		backgroundGradient : {
+			type : "linear",
+			startPoint : { x: '50%', y : '0%'},
+			endPoint : { x: '50%', y : '100%'},
+			colors : [{ color : '#d4cbbb', offset : 0.0},{ color : '#fff', offset : 1.0} ]
+		}
+	},
+		"#optionsButton":{
+			left : 0,
+			top : 0,
+			height : 50,
+			width : 50,
+			backgroundImage : '/images/btn_menu.png',
+		 	backgroundSelectedImage : 'none'
+		},
+		"#backButton":{
+			left : 0,
+			top : 0,
+			height : 50,
+			width : 50,
+			visible : false,
+			backgroundImage : '/images/btn_back.png',
+		 	backgroundSelectedImage : 'none'
+		},
+		"#updateButton":{
+			left : 50,
+			top : 0,
+			height : 50,
+			width : 50,
+			backgroundImage : '/images/btn_update.png',
+		 	backgroundSelectedImage : 'none'
+		},
+		"#searchButton":{
+			right:0,
+			top : 0,
+			height : 50,
+			width : 50,
+			backgroundImage : '/images/btn_search.png',
+		 	backgroundSelectedImage : 'none'
+		},
+		"#searchTxf":{
+			top: 5,
+			left : 5,
+			right : 60,
+			height : 40,
+			backgroundImage : 'none',
+			visible : false,
+			color:"#000",
+			textAlign : Ti.UI.TEXT_ALIGNMENT_CENTER,
+			maxLength : 20,
+			returnKeyType : Ti.UI.RETURNKEY_SEARCH,
+			hintText : "Cerca qui"
+		},
+		"#searchTxf[platform=android]": {
+			softKeyboardOnFocus : Titanium.UI.Android.SOFT_KEYBOARD_SHOW_ON_FOCUS
+		},
+			".border":{
+				height : 2,
+				bottom : 0,
+				left   : 10,
+				right  : 10,
+				backgroundColor:"#d4cbbb"
+			}
+		"#shareButton":{
+			right : 0,
+			top : 0,
+			height : 50,
+			width : 50,
+			visible : false,
+			backgroundImage : '/images/btn_share.png',
+		 	backgroundSelectedImage : 'none'
+		},
+		"#logo": {
+			width : 150,
+			height : 50,
+			image : "/images/logo.png"
+		},
+	"#newsPages":{
+		top : 50,
+		bottom : 50,
+		left : 0,
+		right : 0,
+		backgroundColor : "#FFF",
+		scrollingEnabled : false
+	},
+		"#newsList":{
+			backgroundColor : "#FFF",
+			separatorColor : 'transparent'
+		},
+		"#newsDetail":{
+			backgroundColor : "#FFF",
+			layout : "vertical"
+		},
+			"#newsTitle":{
+				width : "90%",
+				left : '5%',
+				color : "#000",
+				font : Alloy.Globals.Fonts.helveticaCondensedBold16,
+				textAlign : Ti.UI.TEXT_ALIGNMENT_LEFT,
+				top  : 0
+			},
+			"#newsAuthor":{
+				width : "90%",
+				left : '5%',
+				color : "#A1ABB5",
+				font : Alloy.Globals.Fonts.helveticaCondensedBold12,
+				textAlign : Ti.UI.TEXT_ALIGNMENT_LEFT,
+				top  : 5
+			},
+			"#newsFonte":{
+				width : "90%",
+				left : '5%',
+				color : "#A1ABB5",
+				font : Alloy.Globals.Fonts.helveticaCondensed12,
+				textAlign : Ti.UI.TEXT_ALIGNMENT_LEFT,
+				top  : 5
+			},
+			"#newsSummary":{
+				width : "90%",
+				left : '5%',
+				color : "#000",
+				//backgroundColor : "#ededed",
+				font : Alloy.Globals.Fonts.helveticaCondensedBold12,
+				textAlign : Ti.UI.TEXT_ALIGNMENT_CENTER,
+				top  : 5
+			},
+			"#newsVideo":{
+				width : "60%",
+				height : 40,
+				left : '20%',
+				color : "#FFF",
+				borderRadius: 5,
+				font : Alloy.Globals.Fonts.helveticaCondensedBold34,
+				textAlign : Ti.UI.TEXT_ALIGNMENT_CENTER,
+				verticalAlign : Ti.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
+				backgroundColor: "#23286A",
+				top  : 5,
+			},
+			"#newsContent":{
+				width : "90%",
+				left : '5%',
+				color : "#000",
+				font : Alloy.Globals.Fonts.helveticaCondensed16,
+				textAlign : Ti.UI.TEXT_ALIGNMENT_LEFT,
+				top  : 5
+			},
+	"#adContainer":{
+		height : 50,
+		bottom : 0,
+		backgroundColor : "#FFF"
+	}

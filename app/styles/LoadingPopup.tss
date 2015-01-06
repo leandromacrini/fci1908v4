@@ -1,0 +1,14 @@
+"#loadingPopup": {
+	backgroundColor : "transparent"
+},
+	"#background": {
+		backgroundColor : "#000",
+		opacity : 0.6
+	},
+	"#loading": {
+		top : 200
+	},
+	"#title": {
+		color:"#fff",
+		font : Alloy.Globals.Fonts.helveticaNeueBold16
+	}

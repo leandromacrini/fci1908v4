@@ -1,0 +1,33 @@
+<Alloy>
+	<Window id="index" exitOnClose="true">
+		<TableView id="options" onClick="onOptionClick" />
+        <View id="pagesContainer">
+        	<View id="header">
+        		<Button id="optionsButton" onClick="toggleMenu" />
+        		<Button id="backButton" onClick="backClick" />
+        		<Button id="updateButton" onClick="updateClick" />
+        		<ImageView id="logo" />
+        		<Button id="searchButton" onClick="searchClick" />
+        		<Button id="shareButton" onClick="shareClick" />
+        		<TextField id="searchTxf" onReturn="search" >
+        			<View class="border" />
+        		</TextField>
+        	</View>
+	        <ScrollableView id="newsPages">
+	        	<Widget id="swipeRefresh" src="nl.fokkezb.pullToRefresh" onRelease="myRefresher">
+	        		<TableView id="newsList" onClick="onNewsClick" />
+        		</Widget>
+	        	<ScrollView id="newsDetail">
+	        		<Label id="newsTitle" />
+	        		<Label id="newsAuthor" />
+	        		<Label id="newsFonte" />
+	        		<Label id="newsSummary" />
+	        		<Label id="newsVideo" onClick="onVideoClick">VIDEO</Label>
+	        		<Label id="newsSummary" />
+	        		<Label module="xp.ui" id="newsContent" />
+	        	</ScrollView>
+	        </ScrollableView>
+	        <View id="adContainer" />
+		</View>
+	</Window>
+</Alloy>

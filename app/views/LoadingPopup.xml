@@ -1,0 +1,6 @@
+<Alloy>
+	<View id="loadingPopup">
+		<View id="background"></View>
+		<Label id="title">Loading ...</Label>
+	</View>
+</Alloy>

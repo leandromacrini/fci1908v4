@@ -262,8 +262,7 @@ function shareClick(ea) {
 		activity.startActivity(Ti.Android.createIntentChooser(intent, 'Share'));
 	} else {
 		require('ma.car.ti.module.share').share({
-			text : currentNews.title,
-			url : currentNews.url,
+			text : currentNews.url,
 			callback: function( res ){
 				if( res.state === "SUCCESS" ){
 					console.log( "share successed on " + res.platform );

@@ -17,6 +17,7 @@
 	        	<Widget id="swipeRefresh" src="nl.fokkezb.pullToRefresh" onRelease="myRefresher">
 	        		<TableView id="newsList" onClick="onNewsClick" />
         		</Widget>
+        		<View id="infiniteScroller"></View>
 	        	<ScrollView id="newsDetail">
 	        		<Label id="newsTitle" />
 	        		<Label id="newsAuthor" />

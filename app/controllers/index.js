@@ -3,13 +3,13 @@ _ = require('/lib/underscore')._;
 var Admob = require('ti.admob');
 var LogManager = Alloy.createController('business/LogManager');
 
+var VirtualScroller = require('/lib/VirtualScroller.1.2.1');
+var virtual;
+
+
 if(OS_IOS){
 	$.index.top = 20;
 	$.index.statusBarStyle = Titanium.UI.iPhone.StatusBar.LIGHT_CONTENT;
-	
-	$.newsContent.addEventListener('link', function(e) {
-        Ti.Platform.openURL(e.url);
-    });
 }
 
 var menuOpened = false;
@@ -45,67 +45,117 @@ function onVideoClick(ea){
 	if(ea.source.url) Ti.Platform.openURL(ea.source.url);
 }
 
-var currentNews;
-function setCurrentDetailView(news) {
-	currentNews = news;
-	
-	$.newsDetail.removeAllChildren();
-	
-	$.newsTitle.text = news.title || "";
-	$.newsAuthor.text = String.format("%s %s %s", news.detail.author || "", news.day || "", news.hour || "");
-	var newsImage = Ti.UI.createImageView({
+function setCurrentDetail(news, scroll){
+	var title = Ti.UI.createLabel({
 		width : "90%",
 		left : '5%',
+		color : "#000",
+		font : Alloy.Globals.Fonts.helveticaCondensedBold16,
+		textAlign : Ti.UI.TEXT_ALIGNMENT_LEFT,
+		text : news.title || "",
+		top  : 0
+	});
+	scroll.add(title);
+	
+	var author = Ti.UI.createLabel({
+		width : "90%",
+		left : '5%',
+		color : "#A1ABB5",
+		font : Alloy.Globals.Fonts.helveticaCondensedBold12,
+		textAlign : Ti.UI.TEXT_ALIGNMENT_LEFT,
+		text : String.format("%s %s %s", news.detail.author || "", news.day || "", news.hour || ""),
 		top  : 5
 	});
+	scroll.add(author);
+	
 	if(news.detail.photo){
-		Ti.API.info("Image: " + news.detail.photo);
+		var newsImage = Ti.UI.createImageView({
+			width : "90%",
+			left : '5%',
+			top  : 5
+		});
+	
 		Alloy.Managers.ConnectionManager.lazyLoadImage(news.detail.photo, newsImage, function(){
 			newsImage.setWidth("90%");
 		});
+		scroll.add(newsImage);
 	}
-
+	
+	if(news.detail.fonte){
+		var fonte = Ti.UI.createLabel({
+			width : "90%",
+			left : '5%',
+			color : "#A1ABB5",
+			font : Alloy.Globals.Fonts.helveticaCondensed12,
+			textAlign : Ti.UI.TEXT_ALIGNMENT_LEFT,
+			text : "Fonte: " + news.detail.fonte,
+			top  : 5
+		});
+		scroll.add(fonte);
+	}
+	
+	var summary = Ti.UI.createLabel({
+		width : "90%",
+		left : '5%',
+		color : "#000",
+		//backgroundColor : "#ededed",
+		font : Alloy.Globals.Fonts.helveticaCondensedBold12,
+		textAlign : Ti.UI.TEXT_ALIGNMENT_CENTER,
+		top  : 5
+	});
+	scroll.add(summary);
+	
+	if(news.detail.video){
+		var video = Ti.UI.createLabel({
+			width : "60%",
+			height : 40,
+			left : '20%',
+			color : "#FFF",
+			borderRadius: 5,
+			font : Alloy.Globals.Fonts.helveticaCondensedBold34,
+			textAlign : Ti.UI.TEXT_ALIGNMENT_CENTER,
+			verticalAlign : Ti.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
+			backgroundColor: "#23286A",
+			top  : 5,
+			text : "VIDEO",
+			url : news.detail.video
+		});
+		video.addEventListener("click", onVideoClick);
+		scroll.add(video);
+	}
+	
+	var content = Ti.UI.createLabel({
+		width : "90%",
+		left : '5%',
+		color : "#000",
+		font : Alloy.Globals.Fonts.helveticaCondensed16,
+		textAlign : Ti.UI.TEXT_ALIGNMENT_LEFT,
+		top  : 5
+	});
+	
 	if(OS_IOS){
-		//$.newsContent.text = news.detail.content || "Nessun contenuto da visualizzare";
 		var html2as = require('nl.fokkezb.html2as');
+		
 		html2as(
 		    news.detail.content || "Nessun contenuto da visualizzare",
 		    function(err, as) {
 		
 		        if (err) {
 		            console.error(err);
-		
 		        } else {
-		           $.newsContent.attributedString = as;
+		           content.attributedString = as;
 		        }
 		    }
 		);
+		content.addEventListener('link', function(e) {
+        	Ti.Platform.openURL(e.url);
+    	});
 	} else {
-		$.newsContent.autoLink = Ti.UI.AUTOLINK_URLS;
-		$.newsContent.html = news.detail.content || "Nessun contenuto da visualizzare";
+		content.autoLink = Ti.UI.AUTOLINK_URLS;
+		content.html = news.detail.content || "Nessun contenuto da visualizzare";
 	}
 	
-	$.newsDetail.add($.newsTitle);
-	$.newsDetail.add($.newsAuthor);
-	$.newsDetail.add(newsImage);
-	if(news.detail.fonte){
-		$.newsFonte.text = "Fonte: " + news.detail.fonte;
-		$.newsDetail.add($.newsFonte);
-	} else {
-		$.newsFonte.text = "";
-	}
-	if(news.detail.summary){
-		$.newsSummary.backgroundColor = "#ededed"; // hack
-		$.newsSummary.text = news.detail.summary;
-		$.newsDetail.add($.newsSummary);
-	}
-	if(news.detail.video){
-		$.newsDetail.add($.newsVideo);
-		$.newsVideo.url = news.detail.video;
-	} else {
-		$.newsVideo.url = null;
-	}
-	$.newsDetail.add($.newsContent);
+	scroll.add(content);
 	
 	if(OS_IOS){
 		_.each(news.detail.images, function(url){
@@ -117,34 +167,20 @@ function setCurrentDetailView(news) {
 			}));
 		});
 	}
-	
-	$.optionsButton.visible = false;
-	$.searchButton.visible = false;
-	
-	$.backButton.visible = true;
-	$.shareButton.visible = true;
-	$.newsPages.scrollToView(1);
-	$.newsDetail.animate({
-		opacity : 1,
-		duration : 150
-	}, function(){
-		$.newsDetail.setOpacity(1);
-	});
-	Alloy.Managers.ConnectionManager.trackApplication("news");
 }
 
-function setCurrentDetailNews(news, loadText, swipe, callback){
+function getNewsData(news, scroll){
 	//already have detail?
-	if(news.detail && !swipe) {
-		setCurrentDetailView(news);
+	if(news.detail && !updating) {
+		setCurrentDetail(news, scroll);
 	} else {
 		//show loading
-		popup.open(loadText);
+		//popup.open(loadText);
 		Alloy.Managers.ConnectionManager.loadSingleNews(news, function(result){
-			popup.close();
+			//popup.close();
 			if(result){
-				setCurrentDetailView(news);
-				if(callback)callback();
+				setCurrentDetail(news, scroll);
+				updating = false;
 			} else {
 				var alert = Ti.UI.createAlertDialog({
 					buttonNames : ['Riprova'],
@@ -153,12 +189,28 @@ function setCurrentDetailNews(news, loadText, swipe, callback){
 				});
 				alert.addEventListener("click", function(){
 					onError = false;
-					setCurrentDetailNews(news, loadText, swipe, callback);
+					getNewsData(news, scroll);
 				});
 				alert.show();
 			}
 		});
 	}
+}
+
+function getDetailViewForIndex(newsIndex){
+	LogManager.info("getDetailViewForIndex " + newsIndex);
+	
+	var news = datasource[currentDatasourceIndex].news[newsIndex];
+	
+	var scroll = Ti.UI.createScrollView({
+		backgroundColor : "#FFF",
+		layout : "vertical",
+		bubbleParent : false
+	});
+	
+	getNewsData(news, scroll);
+	
+	return scroll;
 }
 
 var currentDatasourceIndex = null;
@@ -170,9 +222,30 @@ function onNewsClick(e){
 		currentDatasourceIndex = e.row.datasourceIndex;
 		currentNewsIndex = e.row.newsIndex;
 		
-		setCurrentDetailNews(datasource[e.row.datasourceIndex].news[e.row.newsIndex],  "Carico i dettagli ...");
+		//recreate infiteScroller
+		$.infiniteScroller.removeAllChildren();
+		//if(virtual) virtual.dispose();
+		virtual = null;
+		virtual = new VirtualScroller({
+		    itemCount: datasource[currentDatasourceIndex].news.length,
+		    getView: getDetailViewForIndex,
+		    start : currentNewsIndex,
+		    pageChanged : function(index){
+		    	LogManager.info("Current Page Changed: " + index);
+		    	currentNewsIndex = index;
+		    }
+		});​
+		$.infiniteScroller.add(virtual.view);
 		
 		if(adView && adView.requestAd) adView.requestAd();
+		$.optionsButton.visible = false;
+		$.searchButton.visible = false;
+		
+		$.backButton.visible = true;
+		$.shareButton.visible = true;
+		$.newsPages.scrollToView(1);
+		Alloy.Managers.ConnectionManager.trackApplication("news");
+		$.newsPages.scrollToView(1);
 	} else {
 		toggleMenu();
 	}
@@ -209,14 +282,10 @@ function updateClick(e){
 			$.newsDetail.setOpacity(0);
 		});
 		
-		setCurrentDetailNews(
-			datasource[currentDatasourceIndex].news[currentNewsIndex],
-			"Aggiornamento notizia ...",
-			true,
-			function(){
-				updating = false;
-			}
-		);
+		if(virtual){
+			LogManager.info("Reload virtual");
+			virtual.reload();
+		}
 	} else {
 		// load news
 		LogManager.info("Reload all news");
@@ -250,6 +319,8 @@ function updateClick(e){
 }
 
 function shareClick(ea) {
+	var currentNews = datasource[currentDatasourceIndex].news[currentNewsIndex];
+	
 	if (OS_ANDROID) {
 		var activity = Ti.Android.currentActivity;
 		var intent = Ti.Android.createIntent({
@@ -329,6 +400,7 @@ var lastDay = null;
 function showNewsByCategory(category, forceReset){
 	
 	if(category >= 0 && datasource && datasource[category]){
+		
 		// number of news to add 
 		var newsCount = Math.max(10, Math.floor(Ti.Platform.displayCaps.platformHeight/100*1.5));
 		
@@ -660,83 +732,6 @@ function displayAdv(){
 	adView.addEventListener('didFailToReceiveAd', toTestAdv );
 	
 	$.adContainer.add(adView);
-}
-
-
-var start = null;
-$.newsDetail.addEventListener('touchstart', function(e) {
-	try{
-		start = e.source.convertPointToView({
-			x : e.x,
-			y : e.y
-		}, $.index);
-	} catch(ex) {
-		//avoid errors
-	}
-});
-$.newsDetail.addEventListener('touchend', function(e) {
-	try{
-		var end = e.source.convertPointToView({
-			x : e.x,
-			y : e.y
-		}, $.index);
-		
-		if(!end) return; //avoid errors
-	
-		//if deltaX exceeds threshold and deltaY is less then threshold, it's a swipe.
-		if (Math.abs(end.y - start.y) < 100) {
-	
-			if (start && end.x - start.x > 50)
-				swipePrev();
-			if (start && end.x - start.x < -50)
-				swipeNext();
-		}
-		start = null;
-	} catch(ex) {
-		//avoid errors
-	}
-}); 
-
-function swipeNext(){
-	if( currentNewsIndex + 1 < datasource[currentDatasourceIndex].news.length ){
-		LogManager.info("Load next news");
-		currentNewsIndex++;
-		$.newsDetail.animate({
-			opacity : 0,
-			duration : 150
-		}, function(){
-			$.newsDetail.setOpacity(0);
-		});
-		setCurrentDetailNews(
-			datasource[currentDatasourceIndex].news[currentNewsIndex],
-			"Carico la news successiva ...",
-			true
-		);
-	} else {
-		LogManager.info("No next news!");
-		Ti.Media.vibrate();
-	}
-}
-	
-function swipePrev(){
-	if( currentNewsIndex > 0){
-		LogManager.info("Load prev news");
-		currentNewsIndex--;
-		setCurrentDetailNews(
-			datasource[currentDatasourceIndex].news[currentNewsIndex],
-			"Carico la news precedente ...",
-			true
-		);
-		$.newsDetail.animate({
-			opacity : 0,
-			duration : 150
-		}, function(){
-			$.newsDetail.setOpacity(0);
-		});
-	} else {
-		LogManager.info("No prev news!");
-		Ti.Media.vibrate();
-	}
 }
 
 if(OS_IOS){

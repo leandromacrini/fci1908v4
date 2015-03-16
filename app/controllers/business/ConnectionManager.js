@@ -211,7 +211,6 @@ var loadSingleNews = function(news, callback) {
 			if(callback) callback(false);
 		},
 		callback : function(data) {
-			Ti.API.info(data);
 			var doc = Ti.XML.parseString(data).documentElement;
 			var article = doc.getElementsByTagName('article').item(0);
 			
@@ -233,7 +232,6 @@ var loadSingleNews = function(news, callback) {
 				_.each(imgs, function(img){
 					news.detail.images.push(/<img.*?src="([^"]+)"/.exec(img)[1]);
 				});
-				Ti.API.info("images: " + JSON.stringify(news.detail.images));
 			} catch (e) { }
 			
 			try{ news.detail.video = article.getElementsByTagName('video').length > 0? article.getElementsByTagName('video').item(0).getAttribute('url') : null; } catch (e) { }

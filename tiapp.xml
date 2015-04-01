@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ti:app xmlns:ti="http://ti.appcelerator.org">
-    <!--<id>it.mari.daniele.fcinter1908</id>-->
-    <id>com.tcc.android.fci1908</id>
+    <id>it.mari.daniele.fcinter1908</id>
+    <!--<id>com.tcc.android.fci1908</id>-->
     <name>FC Inter 1908</name>
     <version>4.0.0</version>
     <publisher>leon</publisher>
@@ -42,10 +42,10 @@
     <android xmlns:android="http://schemas.android.com/apk/res/android"/>
     <modules>
         <module platform="commonjs">nl.fokkezb.html2as</module>
-        <module platform="iphone">ti.module.share</module>
         <module platform="android">com.rkam.swiperefreshlayout</module>
         <module platform="android">ti.admob</module>
         <module platform="iphone">ti.admob</module>
+        <module platform="iphone">ti.module.share</module>
     </modules>
     <deployment-targets>
         <target device="android">true</target>

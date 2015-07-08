@@ -157,9 +157,12 @@ function setCurrentDetail(news, scroll){
 	
 	scroll.add(content);
 	
+	LogManager.info("IMGS " + news.detail.images);
+	LogManager.info("IOS " + OS_IOS);
+	
 	if(OS_IOS){
 		_.each(news.detail.images, function(url){
-			$.newsDetail.add(Ti.UI.createImageView({
+			scroll.add(Ti.UI.createImageView({
 				width : "90%",
 				left : '5%',
 				top  : 5,

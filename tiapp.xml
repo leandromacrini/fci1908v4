@@ -1,61 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ti:app xmlns:ti="http://ti.appcelerator.org">
-    <id>it.mari.daniele.fcinter1908</id>
-    <!--<id>com.tcc.android.fci1908</id>-->
-    <name>FC Inter 1908</name>
-    <version>4.2.0</version>
-    <publisher>FCInter1908.it</publisher>
-    <url>http://www.fcinter1908.it</url>
-    <description>undefined</description>
-    <copyright>2015 by LeonArts</copyright>
-    <icon>appicon.png</icon>
-    <fullscreen>false</fullscreen>
-    <navbar-hidden>false</navbar-hidden>
-    <analytics>true</analytics>
-    <guid>fdb85661-9149-4d31-9208-6e2a20784591</guid>
-    <property name="ti.ui.defaultunit" type="string">dp</property>
-    <ios>
-        <plist>
-            <dict>
-                <key>UISupportedInterfaceOrientations~iphone</key>
-                <array>
-                    <string>UIInterfaceOrientationPortrait</string>
-                </array>
-                <key>UISupportedInterfaceOrientations~ipad</key>
-                <array>
-                    <string>UIInterfaceOrientationPortrait</string>
-                    <string>UIInterfaceOrientationPortraitUpsideDown</string>
-                    <string>UIInterfaceOrientationLandscapeLeft</string>
-                    <string>UIInterfaceOrientationLandscapeRight</string>
-                </array>
-                <key>UIRequiresPersistentWiFi</key>
-                <false/>
-                <key>UIPrerenderedIcon</key>
-                <false/>
-                <key>UIStatusBarHidden</key>
-                <false/>
-                <key>UIStatusBarStyle</key>
-                <string>UIStatusBarStyleDefault</string>
-            </dict>
-        </plist>
-    </ios>
-    <android xmlns:android="http://schemas.android.com/apk/res/android"/>
+<ti:app 
+  xmlns:ti="http://ti.appcelerator.org">
+  <id>it.mari.daniele.fcinter1908</id>
+  <!--<id>com.tcc.android.fci1908</id>-->
+  <name>FC Inter 1908</name>
+  <version>5.0.0.1</version>
+  <publisher>FCInter1908.it</publisher>
+  <url>http://www.fcinter1908.it</url>
+  <description>undefined</description>
+  <copyright>2015 by LeonArts</copyright>
+  <icon>appicon.png</icon>
+  <fullscreen>false</fullscreen>
+  <navbar-hidden>false</navbar-hidden>
+  <analytics>true</analytics>
+  <guid>978c00a5-077e-4726-9666-0932944020e8</guid>
+  <property name="ti.ui.defaultunit" type="string">dp</property>
+  <ios>
+    <plist>
+      <dict>
+        <key>UISupportedInterfaceOrientations~iphone</key>
+        <array>
+          <string>UIInterfaceOrientationPortrait</string>
+        </array>
+        <key>UISupportedInterfaceOrientations~ipad</key>
+        <array>
+          <string>UIInterfaceOrientationPortrait</string>
+          <string>UIInterfaceOrientationPortraitUpsideDown</string>
+          <string>UIInterfaceOrientationLandscapeLeft</string>
+          <string>UIInterfaceOrientationLandscapeRight</string>
+        </array>
+        <key>UIRequiresPersistentWiFi</key>
+        <false/>
+        <key>UIPrerenderedIcon</key>
+        <false/>
+        <key>UIStatusBarHidden</key>
+        <false/>
+        <key>UIStatusBarStyle</key>
+        <string>UIStatusBarStyleDefault</string>
+      </dict>
+    </plist>
+  </ios>
+  <android 
+    xmlns:android="http://schemas.android.com/apk/res/android"/>
     <modules>
-        <module platform="commonjs">nl.fokkezb.html2as</module>
-        <module platform="android">com.rkam.swiperefreshlayout</module>
-        <module platform="android">ti.admob</module>
-        <module platform="iphone">ti.admob</module>
-        <module platform="iphone">ti.module.share</module>
+      <module platform="commonjs">nl.fokkezb.html2as</module>
+      <module platform="android">com.rkam.swiperefreshlayout</module>
+      <module platform="android">ti.admob</module>
+      <module platform="iphone">ti.admob</module>
+      <module platform="iphone">dk.napp.social</module>
+      <module platform="commonjs">ti.cloud</module>
     </modules>
     <deployment-targets>
-        <target device="android">true</target>
-        <target device="blackberry">false</target>
-        <target device="ipad">true</target>
-        <target device="iphone">true</target>
-        <target device="mobileweb">false</target>
+      <target device="android">true</target>
+      <target device="ipad">true</target>
+      <target device="iphone">true</target>
+      <target device="mobileweb">false</target>
     </deployment-targets>
-    <sdk-version>3.5.1.GA</sdk-version>
+    <sdk-version>5.1.2.GA</sdk-version>
     <plugins>
-        <plugin version="1.0">ti.alloy</plugin>
+      <plugin version="1.0">ti.alloy</plugin>
     </plugins>
-</ti:app>
+    <property name="acs-authbase-url-development" type="string">https://secure-identity.cloud.appcelerator.com</property>
+    <property name="acs-base-url-development" type="string">https://api.cloud.appcelerator.com</property>
+    <property name="acs-oauth-secret-development" type="string">BNjAvaBT5LMKZFRTwRWblk1KWKFtLAKr</property>
+    <property name="acs-oauth-key-development" type="string">IjS3SU3tttienhVvfUHdTSq2PnQhlSa1</property>
+    <property name="acs-api-key-development" type="string">2vnPKXYgx3exCuJvTrE6OfbI68LsYtjh</property>
+    <property name="acs-username-development" type="string">appc_app_user_dev</property>
+    <property name="acs-password-development" type="string">s0HP7nElwU3sT8Srt8</property>
+    <property name="acs-authbase-url-production" type="string">https://secure-identity.cloud.appcelerator.com</property>
+    <property name="acs-base-url-production" type="string">https://api.cloud.appcelerator.com</property>
+    <property name="acs-oauth-secret-production" type="string">yyJOZordnOxpZ4WnWca2GJPOGECm1gnR</property>
+    <property name="acs-oauth-key-production" type="string">DS4hxTwsPwHx9g2eqvee9lle75PvYO4g</property>
+    <property name="acs-api-key-production" type="string">Y1so9WcSypJ9y07JMF8AiNf0vAjkj4op</property>
+    <property name="acs-username-production" type="string">appc_app_user</property>
+    <property name="acs-password-production" type="string">pmy6jswyysQQy2qmE7</property>
+    <property name="appc-org-id" type="string">100030733</property>
+    <property name="appc-creator-user-id" type="string">38a61cce-4903-4557-98a9-72381fc7bbff</property>
+  </ti:app>

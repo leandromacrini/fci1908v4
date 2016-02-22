@@ -1,9 +1,14 @@
 var refreshControl;
+var list;
 
 $.refresh = refresh;
 
 $.hide = hide;
 $.show = show;
+
+$.getList = function() {
+  return list;
+};
 
 (function constructor(args) {
 
@@ -12,12 +17,12 @@ $.show = show;
     return;
   }
 
-  if (!_.isArray(args.children) || !_.contains(['Ti.UI.ListView', 'Ti.UI.TableView'], args.children[0].apiName)) {
-    console.error('[pullToRefresh] is missing required Ti.UI.ListView or Ti.UI.TableView as first child element.');
+  if (!_.isArray(args.children) || !_.contains(['Ti.UI.ListView', 'Ti.UI.TableView', 'de.marcelpociot.CollectionView'], args.children[args.children.length-1].apiName)) {
+    console.error('[pullToRefresh] is missing required Ti.UI.ListView or Ti.UI.TableView or de.marcelpociot.CollectionView as first child element.');
     return;
   }
 
-  var list = args.children[0];
+  list = _.last(args.children);
   delete args.children;
 
   _.extend($, args);
@@ -25,6 +30,10 @@ $.show = show;
   if (OS_IOS) {
     refreshControl = Ti.UI.createRefreshControl();
     refreshControl.addEventListener('refreshstart', onRefreshstart);
+
+    if (args.title) {
+      setTitle(args.title);
+    }
 
     list.refreshControl = refreshControl;
 
@@ -57,6 +66,7 @@ function hide() {
     refreshControl.setRefreshing(false);
   }
 }
+exports.hide = hide;
 
 function show() {
 
@@ -67,6 +77,25 @@ function show() {
     refreshControl.setRefreshing(true);
   }
 }
+exports.show = show;
+
+function setTitle(text){
+
+  if (OS_IOS) {
+
+  	if (text.apiName && text.apiName == 'Ti.UI.AttributedString'){
+  		refreshTitle = text;
+
+  	} else {
+  		refreshTitle = Ti.UI.createAttributedString({
+      		text: text
+    		});
+  	}
+
+  	refreshControl.title = refreshTitle;
+  }
+}
+exports.setTitle = setTitle;
 
 function onRefreshstart() {
 

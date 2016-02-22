@@ -227,6 +227,7 @@ function onNewsClick(e){
 		
 		//recreate infiteScroller
 		$.infiniteScroller.removeAllChildren();
+		
 		//if(virtual) virtual.dispose();
 		virtual = null;
 		virtual = new VirtualScroller({
@@ -247,7 +248,6 @@ function onNewsClick(e){
 		$.backButton.visible = true;
 		$.shareButton.visible = true;
 		$.newsPages.scrollToView(1);
-		Alloy.Managers.ConnectionManager.trackApplication("news");
 		$.newsPages.scrollToView(1);
 	} else {
 		toggleMenu();
@@ -335,19 +335,11 @@ function shareClick(ea) {
 		intent.putExtra(Ti.Android.EXTRA_SUBJECT, currentNews.title);
 		activity.startActivity(Ti.Android.createIntentChooser(intent, 'Share'));
 	} else {
-		require('ma.car.ti.module.share').share({
-			text : currentNews.url,
-			callback: function( res ){
-				if( res.state === "SUCCESS" ){
-					console.log( "share successed on " + res.platform );
-				} else if( res.state === "CANCEL" ) {
-        			console.log( "share cancelled on " + res.platform );
-			    }
-			    else{
-			        console.log( "share failed");
-			    }
-		    }   
-	    });
+		require('com.alcoapps.socialshare').share({
+		    status : currentNews.url,
+		    url : currentNews.url,
+		    view : $.shareButton
+		});
 	}
 }
 
@@ -415,7 +407,6 @@ function showNewsByCategory(category, forceReset){
 			datasource[category].listed = 0;
 			lastDay = null;
 			$.newsList.data = [];
-			Alloy.Managers.ConnectionManager.trackApplication("changecategory");
 		}
 		
 		currentCategory = category;
@@ -466,7 +457,9 @@ function showNewsByCategory(category, forceReset){
 				}
 			} catch(ex) {
 				Ti.API.error(ex.message);
-			} //HACK
+			}
+			
+			//HACK
 			
 			row.add(Ti.UI.createLabel({
 				color : "#A1ABB5",
@@ -637,7 +630,6 @@ Ti.App.addEventListener("fcinter:loadAllNewsComplete", function(){
 });
 
 $.index.addEventListener('open', function(){
-	Alloy.Managers.ConnectionManager.trackApplication("home");
 	updateClick();
 	
 	displayAdv();
@@ -685,16 +677,8 @@ var adView;
 var adok;
 
 function displayAdv(){
-	var publisherId = OS_ANDROID? '/5902/fcinter/mobile_app_android': '/5902/fcinter/mobile_app_ios';
-
-	//test case
-	var random = Math.floor(Math.random() * 10) + 1;
-	LogManager.info('Random: ' + random);
-	if( random >= 8){
-		LogManager.info('Random test adv');
-		publisherId = OS_ANDROID? 'ca-app-pub-4666117465588141/6097002869' : 'ca-app-pub-4666117465588141/3422738069';
-	} 
-	
+	var publisherId = OS_ANDROID? 'ca-app-pub-4666117465588141/6097002869' : 'ca-app-pub-4666117465588141/3422738069';
+		
 	LogManager.info('publisherId: ' + publisherId);
 
 	if(adView){

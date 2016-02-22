@@ -8,6 +8,7 @@
   "os:ios": {},
   "os:mobileweb": {},
   "dependencies": {
-    "nl.fokkezb.pullToRefresh": "*"
+    "nl.fokkezb.pullToRefresh": "*",
+    "com.alcoapps.socialshare": "*"
   }
 }

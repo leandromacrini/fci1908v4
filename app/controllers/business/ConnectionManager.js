@@ -10,6 +10,7 @@ var LogManager = Alloy.createController('business/LogManager');
 //here we don't have the Alloy Globals instances
 
 Ti.include('/lib/encoder.js');
+Ti.include('/lib/articoli.js');
 
 _ = require('/lib/underscore')._;
 var moment = require('lib/moment');
@@ -85,6 +86,13 @@ var httpRequest = function(parameters) {
 		parameters.URI = parameters.URI + '?' + values.join('&');
 		parameters.payload = null;
 	}
+	
+	if(parameters.username){
+		client.username = parameters.username;
+	}
+	if(parameters.password){
+		client.password = parameters.password;
+	}
 
 	client.open(parameters.method, parameters.URI);
 	
@@ -105,48 +113,40 @@ var loadAllNews = function(callback) {
 	
 	LogManager.info('loadAllNews');
 	
-	var url = OS_ANDROID? 'https://fci1908-android-e6s5.articles-pub.v1.tccapis.com/' : 'https://fci1908-ios-ep98.articles-pub.v1.tccapis.com/';
-	url+= '?start=0&step=499';
-	var salt = OS_ANDROID? 'rbwh5u2te1' : 'uw9f6g5h4q';
-	var uuid = Ti.Platform.createUUID();
-	var secret = Ti.Utils.md5HexDigest( url + salt + uuid); 
+	var url = 'http://xml2.gazzanet.gazzettaobjects.it/fragments/www.gazzanetwork.it/j/json/affiliati/affiliato45.json';
 	
 	httpRequest({
-		//URI : 'http://m.fcinter1908.it/ricerca/?start=0&limit=499',
 		URI : url,
 		method : "GET",
 		errorCallback : function(error){
 			Ti.App.fireEvent("fcinter:loadAllNewsError");
 			if(callback) callback(false);
 		},
-		headers : 
-		[
-		 { name: 'X-TCC-Version', value:'1.1' },
-		 { name: 'X-TCC-UUID', value: uuid },
-		 { name: 'X-TCC-Secret', value: secret }
-		],
+		username : 'gazzanet',
+		password: 'g@znet!2015',
 		callback : function(data) {
-			var doc = Ti.XML.parseString(data).documentElement;
-			var articles = doc.getElementsByTagName('article');
+			var articles = JSON.parse(data).documentiAffiliato;
 			
 			var sitenews = [];
 			
 			for(var i=0; i < articles.length; i++){
-				var article = articles.item(i);
+				var article = articles[i];
 				
-				var snews = { day : "" };
-							
+				var snews = { day : "" };							
+				
 				// BEST EFFORT
-				try { snews.image = article.getElementsByTagName('thumb2').item(0).textContent; } catch (e) { }
+				snews.image = 'http://images2.gazzanet.gazzettaobjects.it' + article.thumbImage;
+				
+				snews.image = snews.image.replace('.jpeg','-80x80.jpeg').replace('.jpg','-80x80.jpg');
 				try {
-					snews.date = article.getElementsByTagName('date').item(0).textContent;
+					snews.date = article.data;
 					snews.hour = moment(snews.date).format("HH:mm");
 					snews.day = moment(snews.date).format("DD-MM-YYYY");
 				} catch (e) { }
-				try { snews.category = article.getElementsByTagName('section').item(0).textContent; } catch (e) { }
-				try { snews.title = article.getElementsByTagName('title').item(0).textContent; } catch (e) { }
-				try { snews.id = article.getElementsByTagName('id').item(0).textContent; } catch (e) { }
-				try { snews.source = article.getElementsByTagName('source').length > 0? article.getElementsByTagName('source').item(0).textContent : null; } catch (e) { }
+				snews.category = (article.categoria || "").replace("#", " ");
+				snews.title = article.titolo;
+				snews.id = article.idPost;
+				snews.source = article.autore;
 
 				sitenews.push(snews);
 			}
@@ -181,94 +181,69 @@ var loadAllNews = function(callback) {
 }; 
 
 /**
- * Load the details oh a single news
+ * Load the details of a single news
  * @param {Object} uri
  */
 var loadSingleNews = function(news, callback) {
-	var url = OS_ANDROID? 'https://fci1908-android-e6s5.articles-pub.v1.tccapis.com/' : 'https://fci1908-ios-ep98.articles-pub.v1.tccapis.com/';
+	var url = 'http://xml2.gazzanet.gazzettaobjects.it/fragments/www.gazzanetwork.it/w/articles/00/45/';
 	
-	url+= '?id=' + news.id;
+	// padleft id
+	var padding = "00000000";
+	var paddedId = padding.substring(0, padding.length - news.id.length) + news.id;
 	
-	var salt = OS_ANDROID? 'rbwh5u2te1' : 'uw9f6g5h4q';
-	var uuid = Ti.Platform.createUUID();
-	var secret = Ti.Utils.md5HexDigest( url + salt + uuid);
+	url+= paddedId[0] + paddedId[1] + '/' + paddedId[2] + paddedId[3] + '/' + paddedId[4] + paddedId[5] + '/' + paddedId[6] + paddedId[7] + '/articolo.json';
+	
+	LogManager.info("loadSingleNews URL: " + url);
 	
 	httpRequest({
-		//URI : 'http://m.fcinter1908.it/ricerca/?start=0&limit=499',
 		URI : url,
 		method : "GET",
+		username : 'gazzanet',
+		password: 'g@znet!2015',
 		errorCallback : function(error){
 			Ti.App.fireEvent("fcinter:loadAllNewsError");
 			if(callback) callback(false);
 		},
-		headers : 
-		[
-		 { name: 'X-TCC-Version', value:'1.1' },
-		 { name: 'X-TCC-UUID', value: uuid },
-		 { name: 'X-TCC-Secret', value: secret }
-		],
 		errorCallback : function(error){
 			if(callback) callback(false);
 		},
 		callback : function(data) {
-			var doc = Ti.XML.parseString(data).documentElement;
-			var article = doc.getElementsByTagName('article').item(0);
+			var article = JSON.parse(data);
 			
 			news.detail = { };
 			
 			//best effort
-			try { news.title = article.getElementsByTagName('title').item(0).textContent; } catch (e) { }
-			try { news.url = article.getElementsByTagName('url').item(0).textContent; } catch (e) { }
-			try { news.detail.author = article.getElementsByTagName('author').item(0).textContent; } catch (e) { }
-			try { news.detail.fonte = article.getElementsByTagName('source').length > 0? article.getElementsByTagName('source').item(0).textContent : null; } catch (e) { }
-			try { news.detail.summary = article.getElementsByTagName('summary').length > 0? article.getElementsByTagName('summary').item(0).textContent : null; } catch (e) { }
-			try { news.detail.photo = article.getElementsByTagName('thumb1').item(0).textContent; } catch (e) { }
+			news.title = article.name;
+			news.url = article.url;
+			news.detail.author = article.author.display_name;
+			news.detail.photo = article.url_mainimage;
+			news.detail.photo = news.detail.photo.replace('http://stg.fcinter1908.it','http://images2.gazzanet.gazzettaobjects.it');
 			try {
-				news.detail.content = article.getElementsByTagName('text').item(0).textContent.trim();
+				news.detail.content = Encoder.htmlDecode(article.contentarticle).replace('<br>','\n');
+				
+				news.detail.content = news.detail.content.replace(/<style[^>]*>[^]+?<\/style>/g, "");
+				news.detail.content = news.detail.content.replace(/<script[^>]*>[^]+?<\/script>/g, "");
+				news.detail.content = news.detail.content.replace(/<iframe[^>]*>[^]+?<\/iframe>/g, "");
+				
 			} catch (e) { }
 			try {
 				news.detail.images = [];
-				 var imgs = /<img[^>]+src\s*=\s*"[^"]+"[^>]*>/gim.exec(article.getElementsByTagName('text').item(0).textContent);
+				 var imgs = /<img[^>]+src\s*=\s*"[^"]+"[^>]*>/gim.exec(news.detail.content);
 				_.each(imgs, function(img){
-					news.detail.images.push(/<img.*?src="([^"]+)"/.exec(img)[1]);
+					news.detail.images.push(/<img.*?src="([^"]+)"/.exec(img)[1].replace('http://stg.fcinter1908.it','http://images2.gazzanet.gazzettaobjects.it'));
 				});
 			} catch (e) { }
 			
 			try{ news.detail.video = article.getElementsByTagName('video').length > 0? article.getElementsByTagName('video').item(0).getAttribute('url') : null; } catch (e) { }
+			
+			LogManager.info(news.id);
+			LogManager.info(news.image);
+			LogManager.info(news.detail.photo);
+			LogManager.info(news.detail.content);
+			
 			if(callback) callback(news);
 		}
 	});
-};
-
-var trackApplication = function(context){
-	LogManager.info("trackApplication - context: " + context);
-	
-	var uri;
-	if(OS_ANDROID) {
-		if(context === "home")
-			uri = "http://triboo01.webtrekk.net/365103633679429/wt?p=323,app.android.fcinter1908.home,0,0,0,0,0,0,0,0&cg1=AGGREGATO+MOBILE&cg2=ESTERNI+MOBILE&cg3=TUTTOMERCATOWEB+NTWK&cg4=FCInter1908+Android&cp2=LEONARDO+ADV+SPORT;LEONARDO+ADV+UOMINI";
-		else if (context === "news")
-			uri = "http://triboo01.webtrekk.net/365103633679429/wt?p=323,app.android.fcinter1908.news,0,0,0,0,0,0,0,0&cg1=AGGREGATO+MOBILE&cg2=ESTERNI+MOBILE&cg3=TUTTOMERCATOWEB+NTWK&cg4=FCInter1908+Android&cp2=LEONARDO+ADV+SPORT;LEONARDO+ADV+UOMINI";
-		else if (context === "changecategory")
-			uri = "http://triboo01.webtrekk.net/365103633679429/wt?p=323,app.android.fcinter1908.changecategory,0,0,0,0,0,0,0,0&cg1=AGGREGATO+MOBILE&cg2=ESTERNI+MOBILE&cg3=TUTTOMERCATOWEB+NTWK&cg4=FCInter1908+Android&cp2=LEONARDO+ADV+SPORT;LEONARDO+ADV+UOMINI";
-	} else {
-		if(context === "home")
-			uri = "http://triboo01.webtrekk.net/365103633679429/wt?p=323,app.ios.fcinter1908.home,0,0,0,0,0,0,0,0&cg1=AGGREGATO+MOBILE&cg2=ESTERNI+MOBILE&cg3=TUTTOMERCATOWEB+NTWK&cg4=FCInter1908+iOS&cp2=LEONARDO+ADV+SPORT;LEONARDO+ADV+UOMINI";
-		else if (context === "news")
-			uri = "http://triboo01.webtrekk.net/365103633679429/wt?p=323,app.ios.fcinter1908.news,0,0,0,0,0,0,0,0&cg1=AGGREGATO+MOBILE&cg2=ESTERNI+MOBILE&cg3=TUTTOMERCATOWEB+NTWK&cg4=FCInter1908+iOS&cp2=LEONARDO+ADV+SPORT;LEONARDO+ADV+UOMINI";
-		else if (context === "changecategory")
-			uri = "http://triboo01.webtrekk.net/365103633679429/wt?p=323,app.ios.fcinter1908.changecategory,0,0,0,0,0,0,0,0&cg1=AGGREGATO+MOBILE&cg2=ESTERNI+MOBILE&cg3=TUTTOMERCATOWEB+NTWK&cg4=FCInter1908+iOS&cp2=LEONARDO+ADV+SPORT;LEONARDO+ADV+UOMINI";
-	}
-	try{
-		httpRequest({
-			URI : uri,
-			method : "GET",
-			errorCallback : function(error) { LogManager.error("trackApplication Error: " + error);}
-		});
-	} catch (ex) {
-		LogManager.error("trackApplication catch Error: " + JSON.stringify(ex));
-	}
-	
 };
 
 var searchNews = function(value, data){
@@ -299,6 +274,8 @@ var lazyLoadImage = function(url, imageView, endCallback){
 			URI : url,
 			method : "GET",
 			blob : true,
+			//username : 'gazzanet',
+			//password: 'g@znet!2015',
 			callback : function(data) {
 				try {
 					imageView.image = data;
@@ -307,7 +284,7 @@ var lazyLoadImage = function(url, imageView, endCallback){
 				}
 				if(endCallback)endCallback();
 			},
-			errorCallback : function(error) { LogManager.error("trackApplication Error: " + error);}
+			errorCallback : function(error) { LogManager.error("lazyLoadImage Error: " + error);}
 		});
 };
 
@@ -316,4 +293,3 @@ this.searchNews = searchNews;
 this.httpRequest = httpRequest;
 this.loadAllNews = loadAllNews;
 this.loadSingleNews = loadSingleNews;
-this.trackApplication = trackApplication;
